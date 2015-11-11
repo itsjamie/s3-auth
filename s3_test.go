@@ -127,7 +127,7 @@ func TestSign(t *testing.T) {
 			t.Errorf("\n%s\n!=\n%s", actual, test.ExpectedSTS)
 		}
 
-		Sign(test.Request, credentials)
+		SignV2(test.Request, credentials)
 		if test.Request.Header.Get("Authorization") != test.ExpectedAuth {
 			t.Errorf("Authorization doesn't match")
 		}
