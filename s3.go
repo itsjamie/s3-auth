@@ -36,11 +36,11 @@ type Credentials struct {
 	SecretAccessKey string
 }
 
-var credentails *Credentials
+var credentials *Credentials
 
 // SignV2 takes the HTTP request to sign. The Credentials to sign it are loaded once and stored
 func SignV2(request *http.Request) *http.Request {
-	if credentails == nil {
+	if credentials == nil {
 		credentials = getCreds()
 	}
 	request.Header.Set("Authorization", fmt.Sprintf("AWS %s:%s", credentials.AccessKeyID, signString(stringToSign(request), credentials)))
