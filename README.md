@@ -10,6 +10,7 @@ Simply pass that and a populated credentials struct to `s3signer.SignV2()`
 * [Signing and Authenticating REST Requests](http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAuthentication.html)
 
 ## TODO
+- [ ] Implement support for Amazon STS credentials
 - [ ] Implement Signature Version 4
 - [ ] Build Example Browser-based Multipart Uploads using XHR2
 - [ ] Build Example Browser-based Uploads using POST with policies
