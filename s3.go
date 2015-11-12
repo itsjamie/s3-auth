@@ -83,15 +83,6 @@ func canonicalAmzHeaders(request *http.Request) string {
 
 	sort.Strings(headers)
 
-	//TODO(jstackhouse): Combine headers into header-name:csv
-	//  Combine header fields with the same name into one
-	//  "header-name:comma-separated-value-list" pair as
-	//  prescribed by RFC 2616, section 4.2, without any
-	//  whitespace between values. For example, the two
-	//  metadata headers 'x-amz-meta-username: fred' and
-	//  'x-amz-meta-username: barney' would be combined
-	//  into the single header 'x-amz-meta-username: fred,barney'.
-
 	for i, header := range headers {
 		val := strings.Join(request.Header[http.CanonicalHeaderKey(header)], ",")
 		headers[i] = header + ":" + strings.Replace(val, "\n", " ", -1)
