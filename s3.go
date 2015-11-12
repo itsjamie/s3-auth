@@ -47,7 +47,7 @@ func SignV2(request *http.Request) *http.Request {
 	return request
 }
 
-func signString(stringToSign string, keys Credentials) string {
+func signString(stringToSign string, keys *Credentials) string {
 	hash := hmac.New(sha1.New, []byte(keys.SecretAccessKey))
 	hash.Write([]byte(stringToSign))
 	signature := make([]byte, base64.StdEncoding.EncodedLen(hash.Size()))
