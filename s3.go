@@ -39,12 +39,23 @@ type Credentials struct {
 var credentials *Credentials
 
 // SignV2 takes the HTTP request to sign. The Credentials to sign it are loaded once and stored
-func SignV2(request *http.Request) *http.Request {
+func SignV2(request *http.Request) {
 	if credentials == nil {
 		credentials = getCreds()
 	}
-	request.Header.Set("Authorization", fmt.Sprintf("AWS %s:%s", credentials.AccessKeyID, signString(stringToSign(request), credentials)))
-	return request
+	SignV2WithCredentials(request, credentials)
+}
+
+// SignV2WithCredentials takes the HTTP request to sign. The Credentials are passed to sign it.
+func SignV2WithCredentials(request *http.Request, credentials *Credentials) {
+	request.Header.Set(
+		"Authorization",
+		fmt.Sprintf(
+			"AWS %s:%s",
+			credentials.AccessKeyID,
+			signString(stringToSign(request), credentials),
+		),
+	)
 }
 
 func signString(stringToSign string, keys *Credentials) string {
@@ -117,8 +128,12 @@ func canonicalResource(request *http.Request) string {
 
 	subresources := []string{}
 	for _, subResource := range subresourcesS3 {
-		if strings.HasPrefix(request.URL.RawQuery, subResource) {
-			subresources = append(subresources, subResource)
+		if strings.Contains(request.URL.RawQuery, subResource) {
+			if val := request.URL.Query().Get(subResource); val != "" {
+				subresources = append(subresources, subResource+"="+val)
+			} else {
+				subresources = append(subresources, subResource)
+			}
 		}
 	}
 	if len(subresources) > 0 {

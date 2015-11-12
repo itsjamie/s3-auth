@@ -13,12 +13,12 @@ func NewRequestWithHeaders(method string, path string, headers ...string) *http.
 	return req
 }
 
-var credentials = Credentials{
-	AccessKeyID:     "AKIAIOSFODNN7EXAMPLE",
-	SecretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-}
-
 func TestSign(t *testing.T) {
+	credentials = &Credentials{
+		AccessKeyID:     "AKIAIOSFODNN7EXAMPLE",
+		SecretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+	}
+
 	tests := []struct {
 		ExpectedSTS  string
 		ExpectedAuth string
@@ -119,6 +119,17 @@ func TestSign(t *testing.T) {
 				"Date", "Wed, 28 Mar 2007 01:49:49 +0000",
 			),
 		},
+		{
+			"PUT\n\nmultipart/form-data\n\nx-amz-date:Thu, 12 Nov 2015 15:15:27 +0000\n/uploads/test%20ingest.mp4?partNumber=1&uploadId=1DYY7bPzrkrXv3RdX9EPpUfmjx8ihEpGtCUE_F0Jl.dlLvjFytmlckdulxq1M0q7dDxRtLfn54JIOgPTCOvdJHF0C8jIA.Qt34CngfTB.02i_XE5_1B0NToWyDgJ_nRr",
+			"AWS AKIAIOSFODNN7EXAMPLE:mDjCUH9TwVNGB8NEg9hSK8IbkN4=",
+			NewRequestWithHeaders(
+				"PUT",
+				"https://s3.amazonaws.com/uploads/test ingest.mp4?partNumber=1&uploadId=1DYY7bPzrkrXv3RdX9EPpUfmjx8ihEpGtCUE_F0Jl.dlLvjFytmlckdulxq1M0q7dDxRtLfn54JIOgPTCOvdJHF0C8jIA.Qt34CngfTB.02i_XE5_1B0NToWyDgJ_nRr",
+				"Host", "s3.amazonaws.com",
+				"Content-Type", "multipart/form-data",
+				"X-Amz-Date", "Thu, 12 Nov 2015 15:15:27 +0000",
+			),
+		},
 	}
 
 	for _, test := range tests {
@@ -127,7 +138,7 @@ func TestSign(t *testing.T) {
 			t.Errorf("\n%s\n!=\n%s", actual, test.ExpectedSTS)
 		}
 
-		SignV2(test.Request, credentials)
+		SignV2WithCredentials(test.Request, credentials)
 		if test.Request.Header.Get("Authorization") != test.ExpectedAuth {
 			t.Errorf("Authorization doesn't match")
 		}
